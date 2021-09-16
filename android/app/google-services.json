@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "809728866217",
+    "project_id": "frino-6e6d9",
+    "storage_bucket": "frino-6e6d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809728866217:android:37501e92f5655f1aabb6b8",
+        "android_client_info": {
+          "package_name": "com.example.frino"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "809728866217-ac3b1p1uv2bqbj962cst02i52lmpl2pl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.frino",
+            "certificate_hash": "5a0cf56b9e27d1d6014314d6945c396fe4e3bcdb"
+          }
+        },
+        {
+          "client_id": "809728866217-0tsqjmcff9o69sjcaqe4igsm2mfp9h60.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeSvgWKhjxXm4c9XBHN5SX20wFuiAcHYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809728866217-0tsqjmcff9o69sjcaqe4igsm2mfp9h60.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
