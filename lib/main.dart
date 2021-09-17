@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frino/authentication/signin.dart';
+import 'package:frino/authentication/signin/signin_page.dart';
 
 void main() {
   runApp(FrinoApp());
