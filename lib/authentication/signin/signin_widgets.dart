@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:frino/authentication/signin/signin_services.dart';
 import 'package:frino/palette.dart';
 
 // ignore: non_constant_identifier_names
 // Google and Facebook SignIn buttons
-Widget signInButtons() {
+Widget signInButtons(BuildContext context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -67,7 +66,8 @@ Widget textDivider(String text) {
 
 // SignIn Form
 class SignInForm extends StatefulWidget {
-  const SignInForm({Key key}) : super(key: key);
+  const SignInForm({Key key, this.signIn}) : super(key: key);
+  final VoidCallback signIn;
 
   @override
   _SignInFormState createState() => _SignInFormState();
@@ -177,7 +177,7 @@ class _SignInFormState extends State<SignInForm> {
             width: 144,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(primary: primaryColor),
-              onPressed: signInAnonymously,
+              onPressed: widget.signIn,
               child: Text("Sign In"),
             ),
           )
