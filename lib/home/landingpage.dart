@@ -1,18 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/authentication/signin/signin_page.dart';
 import 'package:frino/home/home_page.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({Key key}) : super(key: key);
+  const LandingPage({Key key, @required this.auth}) : super(key: key);
+  final AuthBase auth;
 
   @override
   _LandingPageState createState() => _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> {
-  User _user;
+  FrinoUser _user;
 
   @override
   void initState() {
@@ -20,7 +22,7 @@ class _LandingPageState extends State<LandingPage> {
     super.initState();
   }
 
-  void _updateUser(User user) {
+  void _updateUser(FrinoUser user) {
     setState(() {
       _user = user;
     });
@@ -30,7 +32,7 @@ class _LandingPageState extends State<LandingPage> {
     await Firebase.initializeApp();
 
     try {
-      final User user = await FirebaseAuth.instance.currentUser;
+      final FrinoUser user = await widget.auth.currentUser();
       _updateUser(user);
     } catch (e) {
       print(e);
@@ -42,10 +44,12 @@ class _LandingPageState extends State<LandingPage> {
     if (_user == null) {
       return SignInPage(
         signIn: _updateUser,
+        auth: widget.auth,
       );
     } else {
       return HomePage(
         onSignOut: () => _updateUser(null),
+        auth: widget.auth,
       );
     }
   }
