@@ -4,17 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:frino/authentication/auth/auth.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key, @required this.onSignOut, @required this.auth})
-      : super(key: key);
+  const HomePage({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
-  final VoidCallback onSignOut;
 
   void _signOut() async {
-    await Firebase.initializeApp();
-
     try {
       await auth.signOut();
-      onSignOut();
       print("Signing out...");
     } catch (e) {
       print(e);

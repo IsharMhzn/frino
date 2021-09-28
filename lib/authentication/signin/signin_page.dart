@@ -7,17 +7,12 @@ import 'package:frino/palette.dart';
 import 'package:frino/authentication/signin/signin_widgets.dart';
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({Key key, @required this.signIn, @required this.auth})
-      : super(key: key);
-  final Function(FrinoUser) signIn;
+  const SignInPage({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
 
   Future<void> _signInAnonymously() async {
-    await Firebase.initializeApp();
-
     try {
       final user = await auth.signInAnonymously();
-      signIn(user);
       print("Signing In ${user.uid}");
     } catch (e) {
       print(e);

@@ -9,6 +9,7 @@ class FrinoUser {
 }
 
 abstract class AuthBase {
+  Stream<FrinoUser> get onAuthChanged;
   Future<FrinoUser> currentUser();
   Future<FrinoUser> signInAnonymously();
   Future<void> signOut();
@@ -30,6 +31,11 @@ class Auth extends AuthBase {
       return null;
     }
     return FrinoUser(uid: user.uid);
+  }
+
+  @override
+  Stream<FrinoUser> get onAuthChanged {
+    return _firebaseAuth.authStateChanges().map(_userFromFirebase);
   }
 
   @override
