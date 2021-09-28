@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/palette.dart';
 
 // ignore: non_constant_identifier_names
 // Google and Facebook SignIn buttons
-Widget signInButtons(BuildContext context) {
+Widget signInButtons(BuildContext context, AuthBase auth) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -12,7 +13,7 @@ Widget signInButtons(BuildContext context) {
         width: 56,
         child: ElevatedButton(
           child: Image.asset("assets/images/google-logo.png"),
-          onPressed: () {},
+          onPressed: auth.signInWithGoogle,
           style: ElevatedButton.styleFrom(
             primary: Colors.white,
           ),

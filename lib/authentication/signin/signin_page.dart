@@ -59,7 +59,7 @@ class SignInPage extends StatelessWidget {
             ),
           ),
           textDivider("or continue with"),
-          signInButtons(context),
+          signInButtons(context, auth),
           SizedBox(
             height: 32.0,
           ),
