@@ -27,9 +27,23 @@ Widget signInButtons(BuildContext context, AuthBase auth) {
         width: 56,
         child: ElevatedButton(
           child: Image.asset("assets/images/facebook-logo.png"),
-          onPressed: () {},
+          onPressed: auth.signInWithFacebook,
           style: ElevatedButton.styleFrom(
             primary: Color(0xff4267B2),
+          ),
+        ),
+      ),
+      SizedBox(
+        width: 28,
+      ),
+      SizedBox(
+        height: 56,
+        width: 56,
+        child: ElevatedButton(
+          child: Image.asset("assets/images/twitter-logo.png"),
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            primary: Colors.white,
           ),
         ),
       )
@@ -67,15 +81,18 @@ Widget textDivider(String text) {
 
 // SignIn Form
 class SignInForm extends StatefulWidget {
-  const SignInForm({Key key, this.signIn}) : super(key: key);
-  final VoidCallback signIn;
+  const SignInForm({Key key, @required this.auth}) : super(key: key);
+  final Auth auth;
 
   @override
   _SignInFormState createState() => _SignInFormState();
 }
 
 class _SignInFormState extends State<SignInForm> {
-  final _formKey = GlobalKey<_SignInFormState>();
+  final _formKey = GlobalKey<FormState>();
+  final usernamecontroller = TextEditingController();
+  final passwordcontroller = TextEditingController();
+  String email, password;
   FocusNode usernamefocusNode = new FocusNode();
   FocusNode passwordfocusNode = new FocusNode();
 
@@ -105,13 +122,14 @@ class _SignInFormState extends State<SignInForm> {
           TextFormField(
             cursorColor: primaryColor,
             focusNode: usernamefocusNode,
+            controller: usernamecontroller,
             onTap: requestusernameFocus,
             decoration: InputDecoration(
               icon: Icon(Icons.person,
                   color: usernamefocusNode.hasFocus
                       ? primaryColor
                       : Colors.grey[600]),
-              labelText: "Username",
+              labelText: "Email",
               labelStyle: TextStyle(
                   color: usernamefocusNode.hasFocus
                       ? primaryColor
@@ -121,16 +139,32 @@ class _SignInFormState extends State<SignInForm> {
               ),
             ),
             validator: (value) {
+              String pattern =
+                  r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
+              var regEx = RegExp(pattern);
               if (value == null || value == '') {
-                return "Please enter the user credentials...";
+                return "Please enter the email";
+              } else if (!regEx.hasMatch(value)) {
+                return "Please enter a valid email";
               }
               return null;
             },
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onSaved: (email) {
+              setState(() {
+                this.email = email;
+              });
+            },
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            autocorrect: false,
           ),
           SizedBox(height: 16),
           TextFormField(
             cursorColor: primaryColor,
             focusNode: passwordfocusNode,
+            controller: passwordcontroller,
+            obscureText: true,
             onTap: requestpasswdFocus,
             decoration: InputDecoration(
               icon: Icon(
@@ -141,22 +175,34 @@ class _SignInFormState extends State<SignInForm> {
               ),
               labelText: "Password",
               labelStyle: TextStyle(
-                  color: passwordfocusNode.hasFocus
-                      ? primaryColor
-                      : Colors.grey[600]),
+                color: passwordfocusNode.hasFocus
+                    ? primaryColor
+                    : Colors.grey[600],
+              ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: primaryColor),
               ),
             ),
             validator: (value) {
               if (value == null || value == '') {
-                return "Please enter the user credentials...";
+                return "Please enter the password";
+              } else if (value.length < 8) {
+                return "Password must be at least 8 characters long";
+              } else {
+                return null;
               }
-              return null;
             },
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onSaved: (password) {
+              setState(() {
+                this.password = password;
+              });
+            },
+            textInputAction: TextInputAction.done,
+            autocorrect: false,
           ),
           SizedBox(
-            height: 16.0,
+            height: 20.0,
           ),
           GestureDetector(
             onTap: () {},
@@ -178,7 +224,18 @@ class _SignInFormState extends State<SignInForm> {
             width: 144,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(primary: primaryColor),
-              onPressed: widget.signIn,
+              onPressed: () {
+                try {
+                  var validated = _formKey.currentState.validate();
+
+                  if (validated == true) {
+                    _formKey.currentState.save();
+                    widget.auth.signIn(this.email, this.password);
+                  }
+                } catch (e) {
+                  print(e);
+                }
+              },
               child: Text("Sign In"),
             ),
           )
