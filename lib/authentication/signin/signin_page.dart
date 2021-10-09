@@ -3,22 +3,51 @@ import 'package:flutter/material.dart';
 import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/palette.dart';
 import 'package:frino/authentication/signin/signin_widgets.dart';
+import 'package:frino/authentication/signin/signin_widgets.dart';
 
-class SignInPage extends StatelessWidget {
+enum SignType { Signin, Register }
+
+class SignInPage extends StatefulWidget {
   const SignInPage({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
+
+  @override
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  SignType signtype = SignType.Signin;
+  // final GlobalKey<SignInFormState> _childkey = GlobalKey();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: _buildSignIn(context),
+        body: _buildSignIn(),
         // backgroundColor: Colors.white,
       ),
     );
   }
 
-  Widget _buildSignIn(BuildContext context) {
+  void _toggleSignIn() {
+    setState(() {
+      signtype =
+          signtype == SignType.Signin ? SignType.Register : SignType.Signin;
+    });
+    // _childkey.currentState.passwordcontroller.clear();
+    // _childkey.currentState.usernamecontroller.clear();
+  }
+
+  Widget _buildSignIn() {
+    final List<String> suggestText = signtype == SignType.Signin
+        ? ["Don't have an account? ", "Create one"]
+        : ["Already have an account? ", "Login"];
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -45,11 +74,12 @@ class SignInPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SignInForm(
-                auth: auth,
+                auth: widget.auth,
+                type: signtype,
               ),
             ),
             textDivider("or continue with"),
-            signInButtons(context, auth),
+            signInButtons(context, widget.auth),
             SizedBox(
               height: 32.0,
             ),
@@ -57,13 +87,13 @@ class SignInPage extends StatelessWidget {
               child: RichText(
                   text: TextSpan(children: [
                 TextSpan(
-                    text: "Don't have an account? ",
+                    text: suggestText[0],
                     style: TextStyle(color: Colors.black)),
                 TextSpan(
-                    text: "Create one",
+                    text: suggestText[1],
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        print('The Create one button is clicked!');
+                        _toggleSignIn();
                       },
                     style: TextStyle(
                       color: primaryColor,

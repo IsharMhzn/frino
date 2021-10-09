@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frino/authentication/auth/auth.dart';
+import 'package:frino/authentication/signin/signin_page.dart';
 import 'package:frino/palette.dart';
 
 // ignore: non_constant_identifier_names
@@ -36,17 +37,18 @@ Widget signInButtons(BuildContext context, AuthBase auth) {
       SizedBox(
         width: 28,
       ),
-      SizedBox(
-        height: 56,
-        width: 56,
-        child: ElevatedButton(
-          child: Image.asset("assets/images/twitter-logo.png"),
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            primary: Colors.white,
-          ),
-        ),
-      )
+      // TODO: authentication with twitter
+      // SizedBox(
+      //   height: 56,
+      //   width: 56,
+      //   child: ElevatedButton(
+      //     child: Image.asset("assets/images/twitter-logo.png"),
+      //     onPressed: () {},
+      //     style: ElevatedButton.styleFrom(
+      //       primary: Colors.white,
+      //     ),
+      //   ),
+      // )
     ],
   );
 }
@@ -81,18 +83,21 @@ Widget textDivider(String text) {
 
 // SignIn Form
 class SignInForm extends StatefulWidget {
-  const SignInForm({Key key, @required this.auth}) : super(key: key);
+  const SignInForm({Key key, @required this.auth, @required this.type})
+      : super(key: key);
   final Auth auth;
+  final SignType type;
 
   @override
-  _SignInFormState createState() => _SignInFormState();
+  SignInFormState createState() => SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final usernamecontroller = TextEditingController();
   final passwordcontroller = TextEditingController();
   String email, password;
+  bool _isLoading = false;
   FocusNode usernamefocusNode = new FocusNode();
   FocusNode passwordfocusNode = new FocusNode();
 
@@ -158,6 +163,7 @@ class _SignInFormState extends State<SignInForm> {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             autocorrect: false,
+            enabled: _isLoading == false,
           ),
           SizedBox(height: 16),
           TextFormField(
@@ -200,22 +206,25 @@ class _SignInFormState extends State<SignInForm> {
             },
             textInputAction: TextInputAction.done,
             autocorrect: false,
+            enabled: _isLoading == false,
           ),
           SizedBox(
             height: 20.0,
           ),
-          GestureDetector(
-            onTap: () {},
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                child: Text(
-                  "Forgot Password?",
-                  style: TextStyle(color: primaryColor),
-                ),
-              ),
-            ),
-          ),
+          widget.type == SignType.Signin
+              ? GestureDetector(
+                  onTap: () {},
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(color: primaryColor),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
           SizedBox(
             height: 16.0,
           ),
@@ -224,19 +233,36 @@ class _SignInFormState extends State<SignInForm> {
             width: 144,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(primary: primaryColor),
-              onPressed: () {
-                try {
-                  var validated = _formKey.currentState.validate();
+              onPressed: !_isLoading
+                  ? () async {
+                      try {
+                        var validated = _formKey.currentState.validate();
 
-                  if (validated == true) {
-                    _formKey.currentState.save();
-                    widget.auth.signIn(this.email, this.password);
-                  }
-                } catch (e) {
-                  print(e);
-                }
-              },
-              child: Text("Sign In"),
+                        if (validated == true) {
+                          _formKey.currentState.save();
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          // print("submitting...");
+                          // await Future.delayed(Duration(seconds: 3));
+                          if (widget.type == SignType.Signin) {
+                            widget.auth.signIn(this.email, this.password);
+                          } else {
+                            widget.auth.createUser(this.email, this.password);
+                          }
+                        }
+                      } catch (e) {
+                        print(e);
+                      } finally {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      }
+                    }
+                  : null,
+              child: Text(
+                widget.type == SignType.Signin ? "Sign In" : "Sign Up",
+              ),
             ),
           )
         ],

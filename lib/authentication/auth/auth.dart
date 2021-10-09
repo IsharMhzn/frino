@@ -18,6 +18,7 @@ abstract class AuthBase {
   Future<FrinoUser> signInWithGoogle();
   Future<FrinoUser> signInWithFacebook();
   Future<FrinoUser> signIn(email, password);
+  Future<FrinoUser> createUser(email, password);
   Future<void> signOut();
 }
 
@@ -101,6 +102,13 @@ class Auth extends AuthBase {
   @override
   Future<FrinoUser> signIn(email, password) async {
     final authRes = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
+    return _userFromFirebase(authRes.user);
+  }
+
+  @override
+  Future<FrinoUser> createUser(email, password) async {
+    final authRes = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     return _userFromFirebase(authRes.user);
   }
