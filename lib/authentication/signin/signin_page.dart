@@ -1,16 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/palette.dart';
-import 'package:frino/authentication/signin/signin_widgets.dart';
 import 'package:frino/authentication/signin/signin_widgets.dart';
 
 enum SignType { Signin, Register }
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({Key key, @required this.auth}) : super(key: key);
-  final AuthBase auth;
-
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -74,12 +69,11 @@ class _SignInPageState extends State<SignInPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SignInForm(
-                auth: widget.auth,
                 type: signtype,
               ),
             ),
             textDivider("or continue with"),
-            signInButtons(context, widget.auth),
+            signInButtons(context),
             SizedBox(
               height: 32.0,
             ),

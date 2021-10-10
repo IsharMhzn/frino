@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/authentication/signin/signin_page.dart';
 import 'package:frino/components/platform_alert_dialog.dart';
 import 'package:frino/palette.dart';
+import 'package:provider/provider.dart';
 
 // ignore: non_constant_identifier_names
 // Google and Facebook SignIn buttons
-Widget signInButtons(BuildContext context, AuthBase auth) {
+Widget signInButtons(BuildContext context) {
+  final auth = Provider.of<AuthBase>(context);
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -85,9 +86,7 @@ Widget textDivider(String text) {
 
 // SignIn Form
 class SignInForm extends StatefulWidget {
-  const SignInForm({Key key, @required this.auth, @required this.type})
-      : super(key: key);
-  final Auth auth;
+  const SignInForm({Key key, @required this.type}) : super(key: key);
   final SignType type;
 
   @override
@@ -122,6 +121,7 @@ class SignInFormState extends State<SignInForm> {
 
   void _submitForm() async {
     try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
       var validated = _formKey.currentState.validate();
 
       if (validated == true) {
@@ -132,12 +132,13 @@ class SignInFormState extends State<SignInForm> {
         // print("submitting...");
         // await Future.delayed(Duration(seconds: 3));
         if (widget.type == SignType.Signin) {
-          await widget.auth.signIn(this.email, this.password);
+          await auth.signIn(this.email, this.password);
         } else {
-          await widget.auth.createUser(this.email, this.password);
+          await auth.createUser(this.email, this.password);
         }
       }
     } catch (e) {
+      print(e);
       PlatformAlertDialog(
         title: e.code.split("-").map((val) => (val.toUpperCase())).join(" "),
         content: e.message,

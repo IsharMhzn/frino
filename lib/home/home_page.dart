@@ -1,15 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/components/platform_alert_dialog.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key, @required this.auth}) : super(key: key);
-  final AuthBase auth;
-
-  void _signOut() async {
+  void _signOut(BuildContext context) async {
     try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
       print("Signing out...");
     } catch (e) {
@@ -30,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       cancelActionText: "Cancel",
     ).show(context);
     if (didsignOut) {
-      widget._signOut();
+      widget._signOut(context);
     }
   }
 
