@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/authentication/signin/signin_page.dart';
+import 'package:frino/components/platform_alert_dialog.dart';
 import 'package:frino/palette.dart';
 
 // ignore: non_constant_identifier_names
@@ -118,6 +120,36 @@ class SignInFormState extends State<SignInForm> {
     });
   }
 
+  void _submitForm() async {
+    try {
+      var validated = _formKey.currentState.validate();
+
+      if (validated == true) {
+        _formKey.currentState.save();
+        setState(() {
+          _isLoading = true;
+        });
+        // print("submitting...");
+        // await Future.delayed(Duration(seconds: 3));
+        if (widget.type == SignType.Signin) {
+          await widget.auth.signIn(this.email, this.password);
+        } else {
+          await widget.auth.createUser(this.email, this.password);
+        }
+      }
+    } catch (e) {
+      PlatformAlertDialog(
+        title: e.code.split("-").map((val) => (val.toUpperCase())).join(" "),
+        content: e.message,
+        defaultActionText: "OK",
+      ).show(context);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -233,36 +265,15 @@ class SignInFormState extends State<SignInForm> {
             width: 144,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(primary: primaryColor),
-              onPressed: !_isLoading
-                  ? () async {
-                      try {
-                        var validated = _formKey.currentState.validate();
-
-                        if (validated == true) {
-                          _formKey.currentState.save();
-                          setState(() {
-                            _isLoading = true;
-                          });
-                          // print("submitting...");
-                          // await Future.delayed(Duration(seconds: 3));
-                          if (widget.type == SignType.Signin) {
-                            widget.auth.signIn(this.email, this.password);
-                          } else {
-                            widget.auth.createUser(this.email, this.password);
-                          }
-                        }
-                      } catch (e) {
-                        print(e);
-                      } finally {
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      }
-                    }
-                  : null,
-              child: Text(
-                widget.type == SignType.Signin ? "Sign In" : "Sign Up",
-              ),
+              onPressed: !_isLoading ? _submitForm : null,
+              child: !this._isLoading
+                  ? Text(
+                      widget.type == SignType.Signin ? "Sign In" : "Sign Up",
+                    )
+                  : CircularProgressIndicator(
+                      // backgroundColor: Colors.white,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
             ),
           )
         ],
