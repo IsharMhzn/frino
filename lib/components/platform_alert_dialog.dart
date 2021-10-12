@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frino/components/platformwidget.dart';
 import 'package:frino/palette.dart';
 
@@ -81,5 +83,30 @@ class PlatformAlertDialogButton extends PlatformWidget {
       style:
           ButtonStyle(foregroundColor: MaterialStateProperty.all(primaryColor)),
     );
+  }
+}
+
+class PlatformExceptionAlertDialog extends PlatformAlertDialog {
+  PlatformExceptionAlertDialog({@required this.title, this.exception})
+      : super(
+            title: title,
+            content: _loadContent(exception),
+            defaultActionText: "OK");
+
+  final String title;
+  final FirebaseAuthException exception;
+
+  static Map<String, String> errorCodes = {
+    "email-already-in-use": "The email address is already taken",
+    "invalid-email": "The email address is invalid",
+    "operation-not-allowed": "This method of signing up is invalid",
+    "weak-password": "The password is not strong",
+    "user-disabled": "This user account has been disabled",
+    "user-not-found": "There is no user corresponding to the email",
+    "wrong-password": "The user credentials entered are wrong"
+  };
+
+  static String _loadContent(FirebaseAuthException exception) {
+    return errorCodes[exception.code] ?? exception.message;
   }
 }

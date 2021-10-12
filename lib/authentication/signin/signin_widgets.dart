@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frino/authentication/auth/auth.dart';
 import 'package:frino/authentication/signin/signin_page.dart';
 import 'package:frino/components/platform_alert_dialog.dart';
@@ -137,13 +139,13 @@ class SignInFormState extends State<SignInForm> {
           await auth.createUser(this.email, this.password);
         }
       }
-    } catch (e) {
-      print(e);
-      PlatformAlertDialog(
-        title: e.code.split("-").map((val) => (val.toUpperCase())).join(" "),
-        content: e.message,
-        defaultActionText: "OK",
+    } on FirebaseAuthException catch (e) {
+      PlatformExceptionAlertDialog(
+        title: "Sign In Failed",
+        exception: e,
       ).show(context);
+    } catch (e) {
+      print(e.toString());
     } finally {
       setState(() {
         _isLoading = false;
