@@ -99,10 +99,12 @@ class SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final usernamecontroller = TextEditingController();
   final passwordcontroller = TextEditingController();
-  String email, password;
+  final namecontroller = TextEditingController();
+  String email, password, name;
   bool _isLoading = false;
   FocusNode usernamefocusNode = new FocusNode();
   FocusNode passwordfocusNode = new FocusNode();
+  FocusNode namefocusNode = new FocusNode();
 
   @override
   void initState() {
@@ -121,6 +123,12 @@ class SignInFormState extends State<SignInForm> {
     });
   }
 
+  void requestnameFocus() {
+    setState(() {
+      FocusScope.of(context).requestFocus(namefocusNode);
+    });
+  }
+
   void _submitForm() async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
@@ -128,15 +136,18 @@ class SignInFormState extends State<SignInForm> {
 
       if (validated == true) {
         _formKey.currentState.save();
-        setState(() {
-          _isLoading = true;
-        });
+        if (this.mounted) {
+          setState(() {
+            _isLoading = true;
+          });
+        }
+
         // print("submitting...");
         // await Future.delayed(Duration(seconds: 3));
         if (widget.type == SignType.Signin) {
           await auth.signIn(this.email, this.password);
         } else {
-          await auth.createUser(this.email, this.password);
+          await auth.createUser(this.email, this.password, this.name);
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -147,9 +158,11 @@ class SignInFormState extends State<SignInForm> {
     } catch (e) {
       print(e.toString());
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (this.mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -159,6 +172,39 @@ class SignInFormState extends State<SignInForm> {
       key: _formKey,
       child: Column(
         children: [
+          widget.type == SignType.Register
+              ? TextFormField(
+                  cursorColor: primaryColor,
+                  focusNode: namefocusNode,
+                  controller: namecontroller,
+                  onTap: requestnameFocus,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.text_fields,
+                        color: usernamefocusNode.hasFocus
+                            ? primaryColor
+                            : Colors.grey[600]),
+                    labelText: "Name",
+                    labelStyle: TextStyle(
+                        color: usernamefocusNode.hasFocus
+                            ? primaryColor
+                            : Colors.grey[600]),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor),
+                    ),
+                  ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onSaved: (name) {
+                    setState(() {
+                      this.name = name;
+                    });
+                  },
+                  keyboardType: TextInputType.name,
+                  textInputAction: TextInputAction.next,
+                  autocorrect: false,
+                  enabled: _isLoading == false,
+                )
+              : Container(),
+          SizedBox(height: 16),
           TextFormField(
             cursorColor: primaryColor,
             focusNode: usernamefocusNode,

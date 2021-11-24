@@ -3,12 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:frino/services/databaseservice.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '';
 
 class FrinoUser {
-  FrinoUser({@required this.uid});
+  FrinoUser({@required this.uid, this.name, this.email});
 
   final String uid;
+  String name, email;
 }
 
 abstract class AuthBase {
@@ -18,7 +21,7 @@ abstract class AuthBase {
   Future<FrinoUser> signInWithGoogle();
   Future<FrinoUser> signInWithFacebook();
   Future<FrinoUser> signIn(email, password);
-  Future<FrinoUser> createUser(email, password);
+  Future<FrinoUser> createUser(email, password, name);
   Future<void> signOut();
 }
 
@@ -107,9 +110,10 @@ class Auth extends AuthBase {
   }
 
   @override
-  Future<FrinoUser> createUser(email, password) async {
+  Future<FrinoUser> createUser(email, password, name) async {
     final authRes = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
+    await DatabaseService(uid: authRes.user.uid).addUser(name, email);
     return _userFromFirebase(authRes.user);
   }
 

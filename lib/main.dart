@@ -10,6 +10,8 @@ void main() async {
   await Firebase.initializeApp();
 
   runApp(FrinoApp());
+  // SystemChrome.setSystemUIOverlayStyle(
+  //     SystemUiOverlayStyle(statusBarColor: primaryColor));
 }
 
 class FrinoApp extends StatelessWidget {

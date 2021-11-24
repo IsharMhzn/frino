@@ -22,11 +22,11 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: _buildSignIn(),
-        // backgroundColor: Colors.white,
+    return Scaffold(
+      body: SafeArea(
+        child: _buildSignIn(),
       ),
+      // backgroundColor: Colors.white,
     );
   }
 
